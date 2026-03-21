@@ -32,7 +32,7 @@ const completeTodo = (todo) => {
 };
 const deleteTodo = (todo) => {
     doneTasks = doneTasks.filter((t) => t.id !== todo.id);
-    renderTasks();
+    renderTasks(); 
 };
 const createTodoElement = (todo, isDone) => {
     const li = document.createElement('li');
