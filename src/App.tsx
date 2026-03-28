@@ -1,13 +1,16 @@
 import './App.css';
-import Todo from './components/Todo';
-import { TodoProvider } from './context/TodoContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import Navbar from './components/Navbar';
+import ThemeContent from './components/ThemeContent';
 
 function App() {
-
   return (
-    <TodoProvider>
-      <Todo/>
-    </TodoProvider>
+    <ThemeProvider>
+      <div className="app-container">
+        <Navbar />
+        <ThemeContent />
+      </div>
+    </ThemeProvider>
   );
 }
 
