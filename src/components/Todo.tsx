@@ -27,7 +27,7 @@ const Todo = () => {
             prevDoneTodo.filter((t): boolean => t.id !== todo.id)
         );
     }
-
+   
     return (
         <div className='todo-container'>
             <h1 className='todo-container__header'>JOURNEY TODO</h1>
