@@ -1,0 +1,44 @@
+#root {
+  width: 90%;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.navbar {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+  transition: all 0.3s;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.navbar.light, .content.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.navbar.dark, .content.dark {
+  background-color: #021529;
+  color: #ecf0f1;
+}
+
+button {
+  padding: 3px 5px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
