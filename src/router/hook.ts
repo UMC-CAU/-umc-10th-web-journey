@@ -14,7 +14,7 @@ export const useCurrentPath = () => {
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
     };
-  }, []);
+  }, []);    
 
   return path;
 };
