@@ -16,5 +16,5 @@ export const useCurrentPath = () => {
     };
   }, []);    
 
-  return path;
+  return path;  
 };
