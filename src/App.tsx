@@ -1,4 +1,3 @@
-// src/App.tsx
 import MoviePage from "./pages/MoviePage";
 
 function App() {
