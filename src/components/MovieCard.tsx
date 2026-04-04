@@ -3,7 +3,7 @@ import type { Movie } from '../types/movie';
 
 interface MovieCardProps {
     movie: Movie;
-
+}
 
 export default function MovieCard({ movie }: MovieCardProps) {
     const [isHovered, setIsHovered] = useState(false);
