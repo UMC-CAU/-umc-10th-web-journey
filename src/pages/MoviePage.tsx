@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import useCustomFetch from '../hooks/useCustomFetch';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieCard from '../components/MovieCard';
+import ButtonComponent from '../components/ButtonComponent';
 import type { MovieResponse } from '../types/movie';
 
 export default function MoviePage() {
@@ -14,6 +15,8 @@ export default function MoviePage() {
     );
 
     const movies = response?.results || [];
+    // TMDB API usually limits access to max 500 pages
+    const totalPages = Math.min(response?.total_pages || 1, 500);
 
     const getCategoryTitle = (cat: string | undefined) => {
         switch (cat) {
@@ -55,26 +58,7 @@ export default function MoviePage() {
                     </div>
                 )}
                 
-                <div className="flex items-center justify-center gap-6 mt-16 pb-10">
-                    <button
-                        onClick={() => setPage((prev) => prev - 1)}
-                        disabled={page === 1}
-                        className="px-6 py-3 rounded-xl font-semibold text-slate-900 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-all duration-300 disabled:bg-slate-700 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed hover:bg-emerald-300 hover:-translate-y-1 active:translate-y-0"
-                    >
-                        이전
-                    </button>
-
-                    <div className="flex flex-col items-center justify-center min-w-[50px] h-[50px] rounded-full bg-slate-800 border border-slate-700 shadow-inner">
-                        <span className="font-bold text-lg text-emerald-400 leading-none">{page}</span>
-                    </div>
-
-                    <button
-                        onClick={() => setPage((prev) => prev + 1)}
-                        className="px-6 py-3 rounded-xl font-semibold text-slate-900 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-all duration-300 hover:bg-emerald-300 hover:-translate-y-1 active:translate-y-0"
-                    >
-                        다음
-                    </button>
-                </div>
+                <ButtonComponent page={page} totalPages={totalPages} setPage={setPage} />
             </div>
         </div>
     );
