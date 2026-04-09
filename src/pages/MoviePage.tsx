@@ -20,18 +20,18 @@ export default function MoviePage() {
 
     const getCategoryTitle = (cat: string | undefined) => {
         switch (cat) {
-            case 'popular': return '인기 영화 ✨';
-            case 'now_playing': return '현재 상영 중 🎬';
-            case 'top_rated': return '평점 높은 영화 🏆';
-            case 'upcoming': return '개봉 예정 영화 📅';
-            default: return '영화 탐색 🍿';
+            case 'popular': return '인기 영화';
+            case 'now_playing': return '현재 상영 중';
+            case 'top_rated': return '평점 높은 영화';
+            case 'upcoming': return '개봉 예정 영화';
+            default: return '영화 탐색';
         }
     };
 
     if (isError) return (
         <div className="min-h-screen flex items-center justify-center bg-slate-900">
             <div className="text-rose-500 bg-rose-500/10 px-6 py-4 rounded-xl border border-rose-500/20 text-xl font-medium tracking-wide shadow-lg shadow-rose-500/5">
-                🚨 데이터를 불러오는 데 실패했습니다.
+                데이터를 불러오는 데 실패했습니다.
             </div>
         </div>
     );
@@ -43,7 +43,6 @@ export default function MoviePage() {
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md">
                         {getCategoryTitle(category)}
                     </h1>
-                    <p className="text-slate-400 text-lg">최신 트렌드와 함께하는 영화 탐색</p>
                 </header>
 
                 {isPending ? (
@@ -57,7 +56,7 @@ export default function MoviePage() {
                         ))}
                     </div>
                 )}
-                
+
                 <ButtonComponent page={page} totalPages={totalPages} setPage={setPage} />
             </div>
         </div>
