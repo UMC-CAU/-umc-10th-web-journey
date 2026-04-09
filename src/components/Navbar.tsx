@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 const LINKS = [
     { to: '/', label: '홈' },
@@ -10,18 +10,27 @@ const LINKS = [
 
 export default function Navbar() {
     return (
-        <nav className="flex gap-4 p-4 bg-gray-800 text-white">
-            {LINKS.map(({ to, label }) => (
-                <NavLink
-                    key={to}
-                    to={to}
-                    className={({ isActive }) =>
-                        isActive ? 'font-bold text-green-400' : 'text-gray-300'
-                    }
-                >
-                    {label}
-                </NavLink>
-            ))}
+        <nav className="sticky top-0 z-50 backdrop-blur-lg bg-slate-900/80 border-b border-slate-800/50 shadow-sm">
+            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                <Link to="/" className="text-2xl font-extrabold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+                    CineScope
+                </Link>
+                <div className="flex gap-6">
+                    {LINKS.map(({ to, label }) => (
+                        <NavLink
+                            key={to}
+                            to={to}
+                            className={({ isActive }) =>
+                                `relative px-2 py-1 text-sm md:text-base font-semibold transition-all duration-300 hover:text-emerald-400 ${
+                                    isActive ? 'text-emerald-400 after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-0.5 after:bg-emerald-400 after:rounded-full after:shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'text-slate-300'
+                                }`
+                            }
+                        >
+                            {label}
+                        </NavLink>
+                    ))}
+                </div>
+            </div>
         </nav>
     );
 }

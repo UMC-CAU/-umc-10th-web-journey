@@ -1,67 +1,80 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import useCustomFetch from '../hooks/useCustomFetch';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieCard from '../components/MovieCard';
-import type { Movie, MovieResponse } from '../types/movie';
+import type { MovieResponse } from '../types/movie';
 
 export default function MoviePage() {
     const { category } = useParams<{ category: string }>();
-    const [movies, setMovies] = useState<Movie[]>([]);
-    const [isPending, setIsPending] = useState(false);
-    const [isError, setIsError] = useState(false);
     const [page, setPage] = useState(1);
 
-    useEffect(() => {
-        const fetchMovies = async () => {
-            setIsPending(true);
-            setIsError(false);
-            try {
-                const response = await axios.get<MovieResponse>(
-                    `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}`,
-                    { headers: { Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}` } }
-                );
-                setMovies(response.data.results);
-            } catch {
-                setIsError(true);
-            } finally {
-                setIsPending(false);
-            }
-        };
+    const { data: response, loading: isPending, error: isError } = useCustomFetch<MovieResponse>(
+        category ? `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}` : ''
+    );
 
-        fetchMovies();
-    }, [category, page]);
+    const movies = response?.results || [];
 
-    if (isError) return <div className="text-red-500 text-2xl text-center py-10">에러가 발생했습니다.</div>;
+    const getCategoryTitle = (cat: string | undefined) => {
+        switch (cat) {
+            case 'popular': return '인기 영화 ✨';
+            case 'now_playing': return '현재 상영 중 🎬';
+            case 'top_rated': return '평점 높은 영화 🏆';
+            case 'upcoming': return '개봉 예정 영화 📅';
+            default: return '영화 탐색 🍿';
+        }
+    };
+
+    if (isError) return (
+        <div className="min-h-screen flex items-center justify-center bg-slate-900">
+            <div className="text-rose-500 bg-rose-500/10 px-6 py-4 rounded-xl border border-rose-500/20 text-xl font-medium tracking-wide shadow-lg shadow-rose-500/5">
+                🚨 데이터를 불러오는 데 실패했습니다.
+            </div>
+        </div>
+    );
 
     return (
-        <div className="min-h-screen px-10 py-10 bg-gray-50">
-            {isPending ? (
-                <LoadingSpinner />
-            ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                    {movies.map((movie) => (
-                        <MovieCard key={movie.id} movie={movie} />
-                    ))}
+        <div className="min-h-screen bg-slate-900 px-6 py-12 md:px-12 lg:px-20 selection:bg-emerald-500/30 selection:text-emerald-200">
+            <div className="max-w-7xl mx-auto">
+                <header className="mb-10 text-center md:text-left">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md">
+                        {getCategoryTitle(category)}
+                    </h1>
+                    <p className="text-slate-400 text-lg">최신 트렌드와 함께하는 영화 탐색</p>
+                </header>
+
+                {isPending ? (
+                    <div className="flex justify-center py-20">
+                        <LoadingSpinner />
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 gap-y-10">
+                        {movies.map((movie) => (
+                            <MovieCard key={movie.id} movie={movie} />
+                        ))}
+                    </div>
+                )}
+                
+                <div className="flex items-center justify-center gap-6 mt-16 pb-10">
+                    <button
+                        onClick={() => setPage((prev) => prev - 1)}
+                        disabled={page === 1}
+                        className="px-6 py-3 rounded-xl font-semibold text-slate-900 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-all duration-300 disabled:bg-slate-700 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed hover:bg-emerald-300 hover:-translate-y-1 active:translate-y-0"
+                    >
+                        이전
+                    </button>
+
+                    <div className="flex flex-col items-center justify-center min-w-[50px] h-[50px] rounded-full bg-slate-800 border border-slate-700 shadow-inner">
+                        <span className="font-bold text-lg text-emerald-400 leading-none">{page}</span>
+                    </div>
+
+                    <button
+                        onClick={() => setPage((prev) => prev + 1)}
+                        className="px-6 py-3 rounded-xl font-semibold text-slate-900 bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.3)] transition-all duration-300 hover:bg-emerald-300 hover:-translate-y-1 active:translate-y-0"
+                    >
+                        다음
+                    </button>
                 </div>
-            )}
-            <div className="flex items-center justify-center gap-4 mt-10">
-                <button
-                    onClick={() => setPage((prev) => prev - 1)}
-                    disabled={page === 1}
-                    className="px-6 py-3 rounded-lg text-white bg-[#bedab1] shadow-md transition duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-[#a6ca98]"
-                >
-                    이전
-                </button>
-
-                <span className="font-bold text-lg">{page} 페이지</span>
-
-                <button
-                    onClick={() => setPage((prev) => prev + 1)}
-                    className="px-6 py-3 rounded-lg text-white bg-[#bedab1] shadow-md transition duration-200 hover:bg-[#a6ca98]"
-                >
-                    다음
-                </button>
             </div>
         </div>
     );
