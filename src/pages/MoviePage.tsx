@@ -15,7 +15,6 @@ export default function MoviePage() {
     );
 
     const movies = response?.results || [];
-    // TMDB API usually limits access to max 500 pages
     const totalPages = Math.min(response?.total_pages || 1, 500);
 
     const getCategoryTitle = (cat: string | undefined) => {
