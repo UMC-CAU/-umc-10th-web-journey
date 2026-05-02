@@ -31,7 +31,9 @@ const LoginPage = () => {
             });
             console.log('Login successful:', response.data);
             const accessToken = response.data?.data?.accessToken || response.data?.accessToken;
-            login(accessToken || 'dummy_login_token');
+            const refreshToken = response.data?.data?.refreshToken || response.data?.refreshToken;
+
+            login(accessToken || 'dummy_login_token', refreshToken || 'dummy_refresh_token');
             navigate('/');
         } catch (error: any) {
             console.error('Login failed:', error);

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axios';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface User {
@@ -12,7 +12,7 @@ interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (token: string, userData?: User) => void;
+    login: (token: string, refreshToken: string, userData?: User) => void;
     logout: () => void;
 }
 
@@ -20,6 +20,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken, removeToken] = useLocalStorage<string | null>('accessToken', null);
+    const [refreshToken, setRefreshToken, removeRefreshToken] = useLocalStorage<string | null>('refreshToken', null);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -32,13 +33,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
             try {
-                const response = await axios.get('http://localhost:8000/v1/users/me', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await apiClient.get('/users/me');
                 setUser(response.data?.data || response.data);
             } catch (error) {
                 console.error('Failed to fetch user info:', error);
                 removeToken();
+                removeRefreshToken();
                 setUser(null);
             } finally {
                 setIsLoading(false);
@@ -46,10 +46,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         };
 
         fetchUser();
-    }, [token, removeToken]);
+    }, [token, removeToken, removeRefreshToken]);
 
-    const login = (newToken: string, userData?: User) => {
+    const login = (newToken: string, newRefreshToken: string, userData?: User) => {
         setToken(newToken);
+        setRefreshToken(newRefreshToken);
         if (userData) {
             setUser(userData);
         }
@@ -57,6 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const logout = () => {
         removeToken();
+        removeRefreshToken();
         setUser(null);
     };
 
