@@ -34,9 +34,9 @@ export default function MyPage() {
                             </p>
                         </div>
                         <div>
-                            <p className="text-sm text-slate-400 font-semibold mb-1">닉네임</p>
+                            <p className="text-sm text-slate-400 font-semibold mb-1">이름</p>
                             <p className="text-lg font-medium text-slate-200">
-                                {user?.nickname || '닉네임 정보 없음'}
+                                {user?.name || '이름 정보 없음'}
                             </p>
                         </div>
                     </div>

@@ -32,7 +32,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
             try {
-                setUser({ email: 'user@example.com', nickname: 'UMC 챌린저' });
+                const response = await axios.get('http://localhost:8000/v1/users/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUser(response.data?.data || response.data);
             } catch (error) {
                 console.error('Failed to fetch user info:', error);
                 removeToken();

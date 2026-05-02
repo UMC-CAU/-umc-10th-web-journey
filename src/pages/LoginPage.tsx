@@ -30,7 +30,8 @@ const LoginPage = () => {
                 password: formValues.password,
             });
             console.log('Login successful:', response.data);
-            login(response.data?.accessToken || 'dummy_login_token');
+            const accessToken = response.data?.data?.accessToken || response.data?.accessToken;
+            login(accessToken || 'dummy_login_token');
             navigate('/');
         } catch (error: any) {
             console.error('Login failed:', error);
