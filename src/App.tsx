@@ -6,6 +6,8 @@ import NotFoundPage from './pages/NotFoundPage';
 import MovieDetailPage from './pages/MovieDetailPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import MyPage from './pages/MyPage';
 
 const router = createBrowserRouter([
   {
@@ -13,15 +15,30 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     errorElement: <NotFoundPage />,
     children: [
+      // Public Route
       { index: true, element: <HomePage /> },
       { path: 'movies/:category', element: <MoviePage /> },
       { path: 'movie/:movieId', element: <MovieDetailPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+
+      // Protected Route
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { path: 'mypage', element: <MyPage /> },
+        ],
+      },
     ],
   },
 ]);
 
+import { AuthProvider } from './context/AuthContext';
+
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }

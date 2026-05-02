@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAuth } from '../context/AuthContext';
 
 const LINKS = [
     { to: '/', label: '홈' },
@@ -10,11 +10,11 @@ const LINKS = [
 ];
 
 export default function Navbar() {
-    const [token, , removeToken] = useLocalStorage<string | null>('accessToken', null);
+    const { isAuthenticated, logout, user } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        removeToken();
+        logout();
         alert('로그아웃 되었습니다.');
         navigate('/');
     };
@@ -32,8 +32,7 @@ export default function Navbar() {
                                 key={to}
                                 to={to}
                                 className={({ isActive }) =>
-                                    `relative px-2 py-1 text-sm md:text-base font-semibold transition-all duration-300 hover:text-emerald-400 ${
-                                        isActive ? 'text-emerald-400 after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-0.5 after:bg-emerald-400 after:rounded-full after:shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'text-slate-300'
+                                    `relative px-2 py-1 text-sm md:text-base font-semibold transition-all duration-300 hover:text-emerald-400 ${isActive ? 'text-emerald-400 after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-0.5 after:bg-emerald-400 after:rounded-full after:shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'text-slate-300'
                                     }`
                                 }
                             >
@@ -42,13 +41,18 @@ export default function Navbar() {
                         ))}
                     </div>
                     <div className="flex items-center gap-2 ml-2">
-                        {token ? (
-                            <button
-                                onClick={handleLogout}
-                                className="px-5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-sm transition-all duration-300 hover:bg-slate-700 hover:text-white"
-                            >
-                                로그아웃
-                            </button>
+                        {isAuthenticated ? (
+                            <>
+                                <Link to="/mypage" className="px-4 py-2 text-slate-300 font-semibold text-sm transition-all duration-300 hover:text-emerald-400">
+                                    마이페이지
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="px-5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-sm transition-all duration-300 hover:bg-slate-700 hover:text-white"
+                                >
+                                    로그아웃
+                                </button>
+                            </>
                         ) : (
                             <>
                                 <Link to="/login" className="px-4 py-2 rounded-xl border border-emerald-500/50 text-emerald-400 font-semibold text-sm transition-all duration-300 hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]">

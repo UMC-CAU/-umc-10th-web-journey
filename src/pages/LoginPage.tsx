@@ -5,12 +5,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import BackButton from '../components/BackButton';
 import { loginSchema, type LoginFormValues } from '../types/authSchema';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const [apiError, setApiError] = useState<string | null>(null);
-    const [, setToken] = useLocalStorage<string | null>('accessToken', null);
+    const { login } = useAuth();
 
     const {
         register,
@@ -30,7 +30,7 @@ const LoginPage = () => {
                 password: formValues.password,
             });
             console.log('Login successful:', response.data);
-            setToken(response.data?.accessToken || 'dummy_login_token');
+            login(response.data?.accessToken || 'dummy_login_token');
             navigate('/');
         } catch (error: any) {
             console.error('Login failed:', error);
