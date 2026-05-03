@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import MyPage from './pages/MyPage';
+import GoogleCallbackPage from './pages/GoogleCallbackPage';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: 'movie/:movieId', element: <MovieDetailPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'v1/auth/google/callback', element: <GoogleCallbackPage /> },
 
       // Protected Route
       {

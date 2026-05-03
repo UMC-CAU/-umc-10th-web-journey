@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import apiClient from '../api/axios';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
@@ -48,19 +48,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         fetchUser();
     }, [token, removeToken, removeRefreshToken]);
 
-    const login = (newToken: string, newRefreshToken: string, userData?: User) => {
+    const login = useCallback((newToken: string, newRefreshToken: string, userData?: User) => {
         setToken(newToken);
         setRefreshToken(newRefreshToken);
         if (userData) {
             setUser(userData);
         }
-    };
+    }, [setToken, setRefreshToken]);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         removeToken();
         removeRefreshToken();
         setUser(null);
-    };
+    }, [removeToken, removeRefreshToken]);
 
     const value = {
         user,
