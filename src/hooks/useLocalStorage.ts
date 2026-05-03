@@ -13,20 +13,24 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
     const setValue = useCallback((value: T | ((val: T) => T)) => {
         try {
-            const valueToStore = value instanceof Function ? value(storedValue) : value;
-            setStoredValue(valueToStore);
-            window.localStorage.setItem(key, JSON.stringify(valueToStore));
-            window.dispatchEvent(new Event('auth-storage-change'));
+            setStoredValue(prev => {
+                const valueToStore = value instanceof Function ? value(prev) : value;
+                window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                window.dispatchEvent(new Event('auth-storage-change'));
+                return valueToStore;
+            });
         } catch (error) {
             console.error(error);
         }
-    }, [key, storedValue]);
+    }, [key]);
 
     const removeValue = useCallback(() => {
         try {
-            setStoredValue(initialValue);
-            window.localStorage.removeItem(key);
-            window.dispatchEvent(new Event('auth-storage-change'));
+            setStoredValue(() => {
+                window.localStorage.removeItem(key);
+                window.dispatchEvent(new Event('auth-storage-change'));
+                return initialValue;
+            });
         } catch (error) {
             console.error(error);
         }

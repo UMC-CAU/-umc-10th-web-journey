@@ -7,9 +7,11 @@ export default function MyPage() {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        logout();
-        alert('로그아웃 되었습니다.');
-        navigate('/');
+        navigate('/', { replace: true });
+        setTimeout(() => {
+            logout();
+            alert('로그아웃 되었습니다.');
+        }, 10);
     };
 
     return (

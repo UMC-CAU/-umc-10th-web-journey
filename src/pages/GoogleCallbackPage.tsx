@@ -7,7 +7,12 @@ const GoogleCallbackPage = () => {
     const location = useLocation();
     const { login } = useAuth();
 
+    const hasHandled = React.useRef(false);
+
     useEffect(() => {
+        if (hasHandled.current) return;
+        hasHandled.current = true;
+
         const queryParams = new URLSearchParams(location.search);
         const accessToken = queryParams.get('accessToken');
         const refreshToken = queryParams.get('refreshToken');
@@ -21,7 +26,7 @@ const GoogleCallbackPage = () => {
             // Handle error case, perhaps redirect to login with an error message
             navigate('/login', { replace: true, state: { error: '구글 로그인에 실패했습니다.' } });
         }
-    }, [location, login, navigate]);
+    }, [location.search, login, navigate]);
 
     return (
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
