@@ -3,13 +3,14 @@ import { useAuth } from '../context/AuthContext';
 
 const LINKS = [
     { to: '/', label: '홈' },
-    { to: '/movies/popular', label: '인기 영화' },
-    { to: '/movies/now_playing', label: '상영 중' },
-    { to: '/movies/top_rated', label: '평점 높은' },
-    { to: '/movies/upcoming', label: '개봉 예정' },
+    { to: '/v1/lps', label: 'LP 목록' },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+    onMenuClick?: () => void;
+}
+
+export default function Navbar({ onMenuClick }: NavbarProps) {
     const { isAuthenticated, logout, user } = useAuth();
     const navigate = useNavigate();
 
@@ -20,35 +21,43 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="sticky top-0 z-50 backdrop-blur-lg bg-slate-900/80 border-b border-slate-800/50 shadow-sm">
-            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <Link to="/" className="text-2xl font-extrabold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
-                    CineScope
-                </Link>
+        <nav className="fixed top-0 left-0 w-full z-50 bg-black border-b border-zinc-800 shadow-md h-[72px]">
+            <div className="w-full h-full px-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    {/* Burger Button */}
+                    <button
+                        onClick={onMenuClick}
+                        className="p-2 -ml-2 text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+                        aria-label="메뉴 열기"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M7.95 11.95h32m-32 12h32m-32 12h32" />
+                        </svg>
+                    </button>
+
+                    <Link to="/" className="text-2xl font-black text-white hover:text-emerald-400 transition-colors tracking-wide">
+                        돌려돌려LP판
+                    </Link>
+                </div>
+
                 <div className="flex items-center gap-6">
-                    <div className="flex gap-4 md:gap-6">
-                        {LINKS.map(({ to, label }) => (
-                            <NavLink
-                                key={to}
-                                to={to}
-                                className={({ isActive }) =>
-                                    `relative px-2 py-1 text-sm md:text-base font-semibold transition-all duration-300 hover:text-emerald-400 ${isActive ? 'text-emerald-400 after:absolute after:bottom-[-6px] after:left-0 after:w-full after:h-0.5 after:bg-emerald-400 after:rounded-full after:shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'text-slate-300'
-                                    }`
-                                }
-                            >
-                                {label}
-                            </NavLink>
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-2 ml-2">
+                    {/* Search Icon */}
+                    <button className="text-zinc-300 hover:text-emerald-400 transition-colors p-2" aria-label="검색">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+
+                    <div className="flex items-center gap-3">
                         {isAuthenticated ? (
                             <>
-                                <Link to="/mypage" className="px-4 py-2 text-slate-300 font-semibold text-sm transition-all duration-300 hover:text-emerald-400">
-                                    마이페이지
-                                </Link>
+                                <span className="text-zinc-300 font-medium text-sm hidden sm:block">
+                                    <strong className="text-white">{user?.name || '사용자'}</strong>님 반갑습니다.
+                                </span>
                                 <button
                                     onClick={handleLogout}
-                                    className="px-5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-sm transition-all duration-300 hover:bg-slate-700 hover:text-white"
+                                    className="px-4 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-sm transition-all duration-300 hover:bg-zinc-700 hover:text-white"
                                 >
                                     로그아웃
                                 </button>

@@ -9,6 +9,8 @@ import SignupPage from './pages/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import MyPage from './pages/MyPage';
 import GoogleCallbackPage from './pages/GoogleCallbackPage';
+import LpListPage from './pages/LpListPage';
+import LpDetailPage from './pages/LpDetailPage';
 
 const router = createBrowserRouter([
   {
@@ -23,12 +25,14 @@ const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'v1/auth/google/callback', element: <GoogleCallbackPage /> },
+      { path: 'v1/lps', element: <LpListPage /> },
 
       // Protected Route
       {
         element: <ProtectedRoute />,
         children: [
           { path: 'mypage', element: <MyPage /> },
+          { path: 'lp/:lpid', element: <LpDetailPage /> },
         ],
       },
     ],

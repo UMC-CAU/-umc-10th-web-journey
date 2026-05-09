@@ -1,9 +1,10 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function ProtectedRoute() {
     const { isAuthenticated, isLoading } = useAuth();
+    const location = useLocation();
 
     if (isLoading) {
         return (
@@ -15,8 +16,9 @@ export default function ProtectedRoute() {
 
     if (!isAuthenticated) {
         alert('로그인이 필요한 서비스입니다.');
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
+
 
     return <Outlet />;
 }

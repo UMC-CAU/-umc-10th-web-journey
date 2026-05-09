@@ -39,7 +39,9 @@ const LoginPage = () => {
             const refreshToken = response.data?.data?.refreshToken || response.data?.refreshToken;
 
             login(accessToken || 'dummy_login_token', refreshToken || 'dummy_refresh_token');
-            navigate('/');
+
+            const from = location.state?.from?.pathname || '/';
+            navigate(from, { replace: true });
         } catch (error: any) {
             console.error('Login failed:', error);
             setApiError(error.response?.data?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
@@ -101,7 +103,7 @@ const LoginPage = () => {
                     >
                         로그인
                     </button>
-                    
+
                     <div className="relative flex items-center justify-center w-full mt-2">
                         <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-slate-700/50"></div>
