@@ -106,7 +106,17 @@ export default function LpListPage() {
                                     className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-10 hover:shadow-2xl hover:shadow-emerald-500/20"
                                 >
                                     {lp.thumbnail ? (
-                                        <img src={lp.thumbnail} alt={lp.title} className="w-full h-full object-cover" />
+                                        <img 
+                                            src={lp.thumbnail} 
+                                            alt={lp.title} 
+                                            className="w-full h-full object-cover" 
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                if (!target.src.includes('picsum.photos')) {
+                                                    target.src = `https://picsum.photos/seed/${lp.id}/400/600`;
+                                                }
+                                            }}
+                                        />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-slate-700 text-slate-500">
                                             No Image

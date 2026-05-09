@@ -134,7 +134,17 @@ export default function LpDetailPage() {
                 <div className="flex justify-center mb-12">
                     <div className="w-64 h-64 md:w-80 md:h-80 bg-zinc-900 rounded-full shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden flex items-center justify-center animate-[spin_5s_linear_infinite]">
                         {lp.thumbnail ? (
-                            <img src={lp.thumbnail} alt={lp.title} className="absolute inset-0 w-full h-full object-cover" />
+                            <img 
+                                src={lp.thumbnail} 
+                                alt={lp.title} 
+                                className="absolute inset-0 w-full h-full object-cover" 
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    if (!target.src.includes('picsum.photos')) {
+                                        target.src = `https://picsum.photos/seed/${lp.id}/800/800`;
+                                    }
+                                }}
+                            />
                         ) : (
                             <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-zinc-800 to-zinc-700 flex items-center justify-center text-zinc-500 font-bold">
                                 NO IMAGE
@@ -212,7 +222,7 @@ export default function LpDetailPage() {
                                 <span className={`text-xs px-2 transition-opacity ${commentText.trim().length === 0 ? 'text-rose-400 opacity-100' : 'opacity-0'}`}>
                                     댓글 내용을 1자 이상 입력해주세요.
                                 </span>
-                                <button 
+                                <button
                                     disabled={commentText.trim().length === 0}
                                     className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold rounded-lg transition-colors shadow-lg shadow-emerald-500/20 disabled:shadow-none text-sm"
                                 >
@@ -240,7 +250,7 @@ export default function LpDetailPage() {
                                         </div>
                                     </div>
                                 ))}
-                                
+
                                 {/* Bottom Skeletons for pagination */}
                                 {isFetchingNextComments && Array.from({ length: 3 }).map((_, i) => <CommentSkeleton key={`bot-skel-${i}`} />)}
                             </>
