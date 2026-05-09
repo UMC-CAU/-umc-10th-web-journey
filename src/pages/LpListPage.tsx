@@ -1,26 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInView } from 'react-intersection-observer';
 import apiClient from '../api/axios';
-import LoadingSpinner from '../components/LoadingSpinner';
 import type { LpItem } from '../types/lp';
 
 export default function LpListPage() {
     const [sort, setSort] = useState<'latest' | 'oldest'>('latest');
     const navigate = useNavigate();
+    const { ref, inView } = useInView();
 
-    const { data, isPending, isError, refetch } = useQuery({
+    const {
+        data,
+        isPending,
+        isError,
+        refetch,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteQuery({
         queryKey: ['lps', sort],
-        queryFn: async () => {
+        queryFn: async ({ pageParam = 1 }) => {
             const order = sort === 'latest' ? 'desc' : 'asc';
-            const response = await apiClient.get('/lps', { params: { order } });
+            const response = await apiClient.get('/lps', { params: { order, page: pageParam, limit: 10 } });
             const resultData = response.data?.data;
             const lpArray = resultData?.data || resultData || [];
-            return lpArray as LpItem[];
+
+            return {
+                items: lpArray as LpItem[],
+                nextPage: lpArray.length > 0 ? pageParam + 1 : undefined,
+                isLast: lpArray.length === 0 || lpArray.length < 10
+            };
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            if (lastPage.isLast) return undefined;
+            return lastPage.nextPage;
         },
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10,
     });
+
+    useEffect(() => {
+        if (inView && hasNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, fetchNextPage]);
+
+    const allLps = data?.pages.flatMap(page => page.items) || [];
 
     return (
         <div className="min-h-screen bg-slate-900 px-6 py-12 md:px-12 lg:px-20">
@@ -65,40 +92,47 @@ export default function LpListPage() {
                     </div>
                 ) : isPending ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                        {/* Skeleton Loaders */}
                         {Array.from({ length: 10 }).map((_, i) => (
                             <div key={i} className="aspect-[2/3] bg-slate-800 animate-pulse rounded-xl" />
                         ))}
                     </div>
-                ) : data && data.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 gap-y-10">
-                        {data.map((lp) => (
-                            <div
-                                key={lp.id}
-                                onClick={() => navigate(`/lp/${lp.id}`)}
-                                className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-10 hover:shadow-2xl hover:shadow-emerald-500/20"
-                            >
-                                {lp.thumbnail ? (
-                                    <img src={lp.thumbnail} alt={lp.title} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-slate-700 text-slate-500">
-                                        No Image
-                                    </div>
-                                )}
+                ) : allLps.length > 0 ? (
+                    <>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 gap-y-10">
+                            {allLps.map((lp) => (
+                                <div
+                                    key={lp.id}
+                                    onClick={() => navigate(`/lp/${lp.id}`)}
+                                    className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-10 hover:shadow-2xl hover:shadow-emerald-500/20"
+                                >
+                                    {lp.thumbnail ? (
+                                        <img src={lp.thumbnail} alt={lp.title} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-slate-700 text-slate-500">
+                                            No Image
+                                        </div>
+                                    )}
 
-                                {/* Overlay on Hover */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                                    <h3 className="text-white font-bold text-lg leading-tight mb-2 line-clamp-2">{lp.title}</h3>
-                                    <div className="flex items-center justify-between text-xs font-medium">
-                                        <span className="text-slate-300">{lp.uploadDate?.split('T')[0] || 'Unknown Date'}</span>
-                                        <span className="flex items-center gap-1 text-rose-400">
-                                            ❤️ {lp.likes || 0}
-                                        </span>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                        <h3 className="text-white font-bold text-lg leading-tight mb-2 line-clamp-2">{lp.title}</h3>
+                                        <div className="flex items-center justify-between text-xs font-medium">
+                                            <span className="text-slate-300">{lp.createdAt?.split('T')[0] || 'Unknown Date'}</span>
+                                            <span className="flex items-center gap-1 text-rose-400">
+                                                ❤️ {lp.likes?.length || 0}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+
+                        {/* Trigger Element for Infinite Scroll */}
+                        <div ref={ref} className="h-20 flex items-center justify-center mt-10">
+                            {isFetchingNextPage && (
+                                <div className="w-8 h-8 border-4 border-slate-600 border-t-emerald-500 rounded-full animate-spin"></div>
+                            )}
+                        </div>
+                    </>
                 ) : (
                     <div className="text-center py-20 text-slate-400">
                         등록된 LP가 없습니다.

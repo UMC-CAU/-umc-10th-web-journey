@@ -1,7 +1,22 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useInView } from 'react-intersection-observer';
 import apiClient from '../api/axios';
 import type { LpItem } from '../types/lp';
+
+const CommentSkeleton = () => (
+    <div className="flex gap-4 p-4 border-b border-zinc-800/50 animate-pulse">
+        <div className="w-10 h-10 rounded-full bg-zinc-800 shrink-0"></div>
+        <div className="flex-1 space-y-3 py-1">
+            <div className="flex justify-between">
+                <div className="h-4 bg-zinc-800 rounded w-1/4"></div>
+                <div className="h-3 bg-zinc-800 rounded w-16"></div>
+            </div>
+            <div className="h-4 bg-zinc-800 rounded w-3/4"></div>
+        </div>
+    </div>
+);
 
 export default function LpDetailPage() {
     const { lpid } = useParams<{ lpid: string }>();
@@ -15,6 +30,42 @@ export default function LpDetailPage() {
         },
         enabled: !!lpid,
     });
+
+    const [commentOrder, setCommentOrder] = useState<'latest' | 'oldest'>('latest');
+    const [commentText, setCommentText] = useState('');
+    const { ref: commentRef, inView: commentInView } = useInView();
+
+    const {
+        data: commentsData,
+        isPending: isCommentsPending,
+        isFetchingNextPage: isFetchingNextComments,
+        hasNextPage: hasNextComments,
+        fetchNextPage: fetchNextComments
+    } = useInfiniteQuery({
+        queryKey: ['lpComments', lpid, commentOrder],
+        queryFn: async ({ pageParam = 1 }) => {
+            const order = commentOrder === 'latest' ? 'desc' : 'asc';
+            const response = await apiClient.get(`/lps/${lpid}/comments`, { params: { order, page: pageParam, limit: 10 } });
+            const resultData = response.data?.data;
+            const commentsArray = resultData?.data || resultData || [];
+            return {
+                items: commentsArray,
+                nextPage: commentsArray.length > 0 ? pageParam + 1 : undefined,
+                isLast: commentsArray.length === 0 || commentsArray.length < 10
+            };
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => lastPage.isLast ? undefined : lastPage.nextPage,
+        enabled: !!lpid
+    });
+
+    useEffect(() => {
+        if (commentInView && hasNextComments) {
+            fetchNextComments();
+        }
+    }, [commentInView, hasNextComments, fetchNextComments]);
+
+    const allComments = commentsData?.pages.flatMap(page => page.items) || [];
 
     if (isError) {
         return (
@@ -57,10 +108,10 @@ export default function LpDetailPage() {
                         <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center overflow-hidden">
                             <span className="text-white text-xs font-bold">LP</span>
                         </div>
-                        <span className="text-zinc-200 font-bold text-lg">익명 사용자</span>
+                        <span className="text-zinc-200 font-bold text-lg">{lp.author?.name || '익명 사용자'}</span>
                     </div>
                     <span className="text-zinc-400 font-medium text-sm">
-                        {lp.uploadDate?.split('T')[0] || 'Unknown Date'}
+                        {lp.createdAt?.split('T')[0] || 'Unknown Date'}
                     </span>
                 </div>
 
@@ -107,11 +158,13 @@ export default function LpDetailPage() {
 
                 {/* Tags Placeholder */}
                 <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-                    {['#LP', '#음악', '#턴테이블', '#감성'].map((tag, idx) => (
+                    {lp.tags?.length > 0 ? lp.tags.map((tag: any, idx: number) => (
                         <span key={idx} className="px-4 py-1.5 bg-zinc-800 text-zinc-400 rounded-full text-sm font-semibold">
-                            {tag}
+                            #{tag.name}
                         </span>
-                    ))}
+                    )) : (
+                        <span className="text-zinc-500 text-sm">태그가 없습니다.</span>
+                    )}
                 </div>
 
                 {/* Likes at the bottom */}
@@ -120,8 +173,86 @@ export default function LpDetailPage() {
                         <svg className="w-10 h-10 text-rose-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                         </svg>
-                        {lp.likes || 0}
+                        {lp.likes?.length || 0}
                     </button>
+                </div>
+
+                {/* Comments Section */}
+                <div className="mt-12 border-t border-zinc-800 pt-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-bold text-white">댓글</h2>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setCommentOrder('latest')}
+                                className={`text-sm font-semibold transition-colors ${commentOrder === 'latest' ? 'text-emerald-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+                            >
+                                최신순
+                            </button>
+                            <span className="text-zinc-600">|</span>
+                            <button
+                                onClick={() => setCommentOrder('oldest')}
+                                className={`text-sm font-semibold transition-colors ${commentOrder === 'oldest' ? 'text-emerald-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+                            >
+                                오래된순
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Comment Input UI */}
+                    <div className="flex gap-4 mb-8">
+                        <div className="w-10 h-10 rounded-full bg-zinc-700 shrink-0 flex items-center justify-center text-xs font-bold text-white">ME</div>
+                        <div className="flex-1 flex flex-col gap-2">
+                            <textarea
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                placeholder="댓글을 남겨보세요..."
+                                className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-4 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 resize-none h-24 transition-all"
+                            ></textarea>
+                            <div className="flex justify-between items-center">
+                                <span className={`text-xs px-2 transition-opacity ${commentText.trim().length === 0 ? 'text-rose-400 opacity-100' : 'opacity-0'}`}>
+                                    댓글 내용을 1자 이상 입력해주세요.
+                                </span>
+                                <button 
+                                    disabled={commentText.trim().length === 0}
+                                    className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold rounded-lg transition-colors shadow-lg shadow-emerald-500/20 disabled:shadow-none text-sm"
+                                >
+                                    등록
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Comments List */}
+                    <div className="space-y-1">
+                        {isCommentsPending ? (
+                            Array.from({ length: 5 }).map((_, i) => <CommentSkeleton key={`initial-skel-${i}`} />)
+                        ) : allComments.length > 0 ? (
+                            <>
+                                {allComments.map((comment: any, idx) => (
+                                    <div key={comment.id || idx} className="flex gap-4 p-4 border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-zinc-800 shrink-0 flex items-center justify-center text-xs font-bold text-zinc-500">U</div>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between mb-1 items-center">
+                                                <span className="font-semibold text-zinc-300 text-sm">{comment.author?.name || '익명'}</span>
+                                                <span className="text-xs text-zinc-500">{comment.createdAt?.split('T')[0] || '방금 전'}</span>
+                                            </div>
+                                            <p className="text-zinc-400 text-sm leading-relaxed">{comment.content}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                
+                                {/* Bottom Skeletons for pagination */}
+                                {isFetchingNextComments && Array.from({ length: 3 }).map((_, i) => <CommentSkeleton key={`bot-skel-${i}`} />)}
+                            </>
+                        ) : (
+                            <div className="text-center py-12 text-zinc-500 text-sm border border-dashed border-zinc-800 rounded-xl">
+                                첫 번째 댓글을 남겨보세요!
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Trigger Element for Infinite Scroll */}
+                    <div ref={commentRef} className="h-4 w-full mt-4"></div>
                 </div>
 
             </div>
