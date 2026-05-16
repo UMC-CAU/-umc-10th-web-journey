@@ -46,12 +46,24 @@ export default function ProfileEditModal({ onClose }: ProfileEditModalProps) {
             const response = await apiClient.patch('/users', payload);
             return response.data?.data || response.data;
         },
+        // Optimistic update: reflect the new nickname/bio in Nav-Bar and
+        // MyPage immediately, before the server responds.
+        onMutate: () => {
+            const previous = { name: user?.name, bio: user?.bio };
+            updateUser({ name: name.trim(), bio: bio.trim() });
+            return { previous };
+        },
         onSuccess: (data) => {
+            // Reconcile with the server's authoritative response (e.g. avatar URL).
             updateUser(data);
             alert('프로필이 수정되었습니다.');
             onClose();
         },
-        onError: (error: any) => {
+        onError: (error: any, _vars, context) => {
+            // Roll back the optimistic change on failure.
+            if (context?.previous) {
+                updateUser(context.previous as { name?: string; bio?: string });
+            }
             alert(error?.response?.data?.message || '프로필 수정에 실패했습니다.');
         },
     });
