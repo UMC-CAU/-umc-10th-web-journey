@@ -46,16 +46,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             >
                 <div className="p-6 w-64 flex flex-col gap-4 h-full">
                     <h2 className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">메뉴</h2>
-                    <Link to="/v1/lps" className="text-zinc-300 hover:text-emerald-400 transition-colors py-2 font-medium" onClick={onClose}>
+                    <Link to="/v1/lps" className="text-zinc-300 hover:text-amber-400 transition-colors py-2 font-medium" onClick={onClose}>
                         LP 목록
                     </Link>
-                    <Link to="/v1/lps?sort=latest" className="text-zinc-300 hover:text-emerald-400 transition-colors py-2 font-medium" onClick={onClose}>
+                    <Link to="/v1/lps?sort=latest" className="text-zinc-300 hover:text-amber-400 transition-colors py-2 font-medium" onClick={onClose}>
                         최신 LP
                     </Link>
                     {isAuthenticated && (
                         <>
                             <h2 className="text-zinc-500 text-xs font-bold uppercase tracking-wider mt-4 mb-2">개인</h2>
-                            <Link to="/mypage" className="text-zinc-300 hover:text-emerald-400 transition-colors py-2 font-medium" onClick={onClose}>
+                            <Link to="/mypage" className="text-zinc-300 hover:text-amber-400 transition-colors py-2 font-medium" onClick={onClose}>
                                 마이페이지
                             </Link>
 

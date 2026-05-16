@@ -115,7 +115,7 @@ export default function LpFormModal({ onClose, lp }: LpFormModalProps) {
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-48 h-48 rounded-full bg-zinc-900 border-2 border-dashed border-zinc-700 overflow-hidden flex items-center justify-center hover:border-emerald-500/50 transition-colors"
+                        className="w-48 h-48 rounded-full bg-zinc-900 border-2 border-dashed border-zinc-700 overflow-hidden flex items-center justify-center hover:border-amber-500/50 transition-colors"
                     >
                         {preview ? (
                             <img src={preview} alt="미리보기" className="w-full h-full object-cover" />
@@ -138,14 +138,14 @@ export default function LpFormModal({ onClose, lp }: LpFormModalProps) {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="LP Name"
-                    className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-4 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 mb-4 transition-all"
+                    className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-4 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50 mb-4 transition-all"
                 />
 
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="LP Content"
-                    className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-4 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 resize-none h-28 mb-4 transition-all"
+                    className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-4 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50 resize-none h-28 mb-4 transition-all"
                 />
 
                 {/* Tag input */}
@@ -161,12 +161,12 @@ export default function LpFormModal({ onClose, lp }: LpFormModalProps) {
                             }
                         }}
                         placeholder="LP Tag"
-                        className="flex-1 bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-3 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 transition-all"
+                        className="flex-1 bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-3 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50 transition-all"
                     />
                     <button
                         type="button"
                         onClick={handleAddTag}
-                        className="px-5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl transition-colors"
+                        className="px-5 bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl transition-colors"
                     >
                         Add
                     </button>
@@ -197,7 +197,7 @@ export default function LpFormModal({ onClose, lp }: LpFormModalProps) {
                     type="button"
                     disabled={!canSubmit}
                     onClick={() => mutation.mutate()}
-                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold rounded-xl transition-colors"
+                    className="w-full py-4 bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold rounded-xl transition-colors"
                 >
                     {mutation.isPending ? '저장 중...' : isEdit ? 'Edit LP' : 'Add LP'}
                 </button>

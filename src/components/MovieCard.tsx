@@ -11,7 +11,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
 
     return (
         <div
-            className="group relative overflow-hidden rounded-2xl shadow-xl shadow-slate-900/50 cursor-pointer transition-all duration-500 bg-slate-800 border border-slate-700/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/20 hover:border-emerald-500/30"
+            className="group relative overflow-hidden rounded-2xl shadow-xl shadow-slate-900/50 cursor-pointer transition-all duration-500 bg-slate-800 border border-slate-700/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/20 hover:border-amber-500/30"
             onClick={() => navigate(`/movie/${movie.id}`)}
         >
             <div className="aspect-[2/3] overflow-hidden bg-slate-800">
@@ -35,7 +35,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
             <div className="absolute inset-0 p-5 flex flex-col justify-end translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                 <h2 className="text-white text-xl font-extrabold mb-1 drop-shadow-md line-clamp-1">{movie.title}</h2>
                 <div className="flex items-center gap-2 mb-3">
-                    <span className="text-emerald-400 text-sm font-bold bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">
+                    <span className="text-amber-400 text-sm font-bold bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
                         ⭐ {movie.vote_average.toFixed(1)}
                     </span>
                     <span className="text-slate-300 text-xs">{movie.release_date}</span>

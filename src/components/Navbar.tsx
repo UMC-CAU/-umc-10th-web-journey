@@ -46,14 +46,17 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
                         </svg>
                     </button>
 
-                    <Link to="/" className="text-2xl font-black text-white hover:text-emerald-400 transition-colors tracking-wide">
-                        돌려돌려LP판
+                    <Link
+                        to="/"
+                        className="text-2xl font-black tracking-[0.2em] bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600 bg-clip-text text-transparent hover:from-amber-100 hover:to-amber-500 transition-all"
+                    >
+                        LPWORLD
                     </Link>
                 </div>
 
                 <div className="flex items-center gap-6">
                     {/* Search Icon */}
-                    <button className="text-zinc-300 hover:text-emerald-400 transition-colors p-2" aria-label="검색">
+                    <button className="text-zinc-300 hover:text-amber-400 transition-colors p-2" aria-label="검색">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -76,10 +79,10 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
                             </>
                         ) : (
                             <>
-                                <Link to="/login" className="px-4 py-2 rounded-xl border border-emerald-500/50 text-emerald-400 font-semibold text-sm transition-all duration-300 hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]">
+                                <Link to="/login" className="px-4 py-2 rounded-xl border border-amber-500/50 text-amber-400 font-semibold text-sm transition-all duration-300 hover:bg-amber-500 hover:text-white hover:shadow-[0_0_15px_rgba(201,162,39,0.4)]">
                                     로그인
                                 </Link>
-                                <Link to="/signup" className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold text-sm transition-all duration-300 hover:from-emerald-400 hover:to-cyan-400 hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]">
+                                <Link to="/signup" className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold text-sm transition-all duration-300 hover:from-amber-400 hover:to-amber-300 hover:shadow-[0_0_15px_rgba(201,162,39,0.4)]">
                                     회원가입
                                 </Link>
                             </>

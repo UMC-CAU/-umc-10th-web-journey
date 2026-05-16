@@ -217,7 +217,7 @@ export default function LpDetailPage() {
             <div className="min-h-[calc(100vh-72px)] bg-black px-6 py-12 md:px-12 lg:px-20 flex items-center justify-center">
                 <div className="w-full max-w-7xl py-20">
                     <div className="flex justify-center">
-                        <div className="w-16 h-16 border-4 border-zinc-800 border-t-emerald-500 rounded-full animate-spin"></div>
+                        <div className="w-16 h-16 border-4 border-zinc-800 border-t-amber-500 rounded-full animate-spin"></div>
                     </div>
                 </div>
             </div>
@@ -233,7 +233,7 @@ export default function LpDetailPage() {
                 {/* Header: User Profile and Date */}
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center overflow-hidden">
+                        <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center overflow-hidden">
                             {lp.author?.avatar ? (
                                 <img src={lp.author.avatar} alt={lp.author?.name} className="w-full h-full object-cover" />
                             ) : (
@@ -254,7 +254,7 @@ export default function LpDetailPage() {
                     </h1>
                     {isLpOwner && (
                         <div className="flex items-center gap-4 text-zinc-400 shrink-0 mt-1">
-                            <button onClick={() => setEditModalOpen(true)} className="hover:text-emerald-400 transition-colors" aria-label="수정">
+                            <button onClick={() => setEditModalOpen(true)} className="hover:text-amber-400 transition-colors" aria-label="수정">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                             </button>
                             <button onClick={handleDeleteLp} className="hover:text-rose-400 transition-colors" aria-label="삭제">
@@ -335,14 +335,14 @@ export default function LpDetailPage() {
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setCommentOrder('latest')}
-                                className={`text-sm font-semibold transition-colors ${commentOrder === 'latest' ? 'text-emerald-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                className={`text-sm font-semibold transition-colors ${commentOrder === 'latest' ? 'text-amber-400' : 'text-zinc-500 hover:text-zinc-300'}`}
                             >
                                 최신순
                             </button>
                             <span className="text-zinc-600">|</span>
                             <button
                                 onClick={() => setCommentOrder('oldest')}
-                                className={`text-sm font-semibold transition-colors ${commentOrder === 'oldest' ? 'text-emerald-400' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                className={`text-sm font-semibold transition-colors ${commentOrder === 'oldest' ? 'text-amber-400' : 'text-zinc-500 hover:text-zinc-300'}`}
                             >
                                 오래된순
                             </button>
@@ -357,7 +357,7 @@ export default function LpDetailPage() {
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
                                 placeholder="댓글을 남겨보세요..."
-                                className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-4 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 resize-none h-24 transition-all"
+                                className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl p-4 text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 resize-none h-24 transition-all"
                             ></textarea>
                             <div className="flex justify-between items-center">
                                 <span className={`text-xs px-2 transition-opacity ${commentText.trim().length === 0 ? 'text-rose-400 opacity-100' : 'opacity-0'}`}>
@@ -366,7 +366,7 @@ export default function LpDetailPage() {
                                 <button
                                     disabled={commentText.trim().length === 0 || createCommentMutation.isPending}
                                     onClick={() => createCommentMutation.mutate(commentText.trim())}
-                                    className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold rounded-lg transition-colors shadow-lg shadow-emerald-500/20 disabled:shadow-none text-sm"
+                                    className="px-5 py-2 bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold rounded-lg transition-colors shadow-lg shadow-amber-500/20 disabled:shadow-none text-sm"
                                 >
                                     {createCommentMutation.isPending ? '등록 중...' : '등록'}
                                 </button>
@@ -436,7 +436,7 @@ export default function LpDetailPage() {
                                                             onChange={(e) => setEditingCommentText(e.target.value)}
                                                             aria-label="댓글 수정"
                                                             placeholder="댓글을 수정하세요..."
-                                                            className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-lg p-3 text-zinc-200 text-sm focus:outline-none focus:border-emerald-500/50 resize-none h-20"
+                                                            className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-lg p-3 text-zinc-200 text-sm focus:outline-none focus:border-amber-500/50 resize-none h-20"
                                                         />
                                                         <div className="flex gap-2 justify-end">
                                                             <button
@@ -451,7 +451,7 @@ export default function LpDetailPage() {
                                                             <button
                                                                 disabled={editingCommentText.trim().length === 0 || updateCommentMutation.isPending}
                                                                 onClick={() => updateCommentMutation.mutate({ commentId: comment.id, content: editingCommentText.trim() })}
-                                                                className="px-3 py-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white rounded-lg transition-colors"
+                                                                className="px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white rounded-lg transition-colors"
                                                             >
                                                                 저장
                                                             </button>

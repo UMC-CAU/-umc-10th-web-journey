@@ -36,7 +36,7 @@ export default function MoviePage() {
     );
 
     return (
-        <div className="min-h-screen bg-slate-900 px-6 py-12 md:px-12 lg:px-20 selection:bg-emerald-500/30 selection:text-emerald-200">
+        <div className="min-h-screen bg-slate-900 px-6 py-12 md:px-12 lg:px-20 selection:bg-amber-500/30 selection:text-amber-200">
             <div className="max-w-7xl mx-auto">
                 <header className="mb-10 text-center md:text-left">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md">

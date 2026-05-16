@@ -8,12 +8,12 @@ export default function MyPage() {
 
     return (
         <div className="max-w-4xl mx-auto px-6 py-12 text-white">
-            <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">
                 마이페이지
             </h1>
 
             <div className="bg-slate-800/80 p-8 rounded-3xl border border-slate-700/50 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-cyan-500"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-600"></div>
 
                 <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center text-4xl shadow-inner border-2 border-slate-600 overflow-hidden">

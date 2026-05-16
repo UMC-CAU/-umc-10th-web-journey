@@ -79,7 +79,7 @@ const LoginPage = () => {
                         <input
                             type="email"
                             {...register('email')}
-                            className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-emerald-400/50 ${errors.email ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-emerald-400/50 text-white'
+                            className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-amber-400/50 ${errors.email ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-amber-400/50 text-white'
                                 }`}
                             placeholder="이메일을 입력해주세요!"
                         />
@@ -93,7 +93,7 @@ const LoginPage = () => {
                         <input
                             type="password"
                             {...register('password')}
-                            className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-emerald-400/50 ${errors.password ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-emerald-400/50 text-white'
+                            className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-amber-400/50 ${errors.password ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-amber-400/50 text-white'
                                 }`}
                             placeholder="비밀번호를 입력해주세요!"
                         />
@@ -106,7 +106,7 @@ const LoginPage = () => {
                         type="submit"
                         disabled={!isValid || loginMutation.isPending}
                         className={`mt-4 w-full py-4 px-6 rounded-xl font-bold transition-all duration-300 ${isValid && !loginMutation.isPending
-                            ? 'text-white bg-emerald-500 hover:bg-emerald-400 transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_0_15px_rgba(52,211,153,0.4)] hover:shadow-[0_0_25px_rgba(52,211,153,0.6)] cursor-pointer'
+                            ? 'text-white bg-amber-500 hover:bg-amber-400 transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_0_15px_rgba(201,162,39,0.4)] hover:shadow-[0_0_25px_rgba(201,162,39,0.6)] cursor-pointer'
                             : 'text-slate-500 bg-slate-800 border border-slate-700 cursor-not-allowed'
                             }`}
                     >

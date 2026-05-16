@@ -81,7 +81,7 @@ export default function LpListPage() {
                         <button
                             onClick={() => setSort('latest')}
                             className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${sort === 'latest'
-                                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
                                 : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                                 }`}
                         >
@@ -90,7 +90,7 @@ export default function LpListPage() {
                         <button
                             onClick={() => setSort('oldest')}
                             className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${sort === 'oldest'
-                                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
                                 : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                                 }`}
                         >
@@ -124,7 +124,7 @@ export default function LpListPage() {
                                 <div
                                     key={lp.id}
                                     onClick={() => navigate(`/lp/${lp.id}`)}
-                                    className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-10 hover:shadow-2xl hover:shadow-emerald-500/20"
+                                    className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-10 hover:shadow-2xl hover:shadow-amber-500/20"
                                 >
                                     {lp.thumbnail ? (
                                         <img

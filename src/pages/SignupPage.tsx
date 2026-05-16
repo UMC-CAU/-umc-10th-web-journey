@@ -106,7 +106,7 @@ export default function SignupPage() {
                             <input
                                 type="email"
                                 {...register('email')}
-                                className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-emerald-400/50 ${errors.email ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-emerald-400/50 text-white'}`}
+                                className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-amber-400/50 ${errors.email ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-amber-400/50 text-white'}`}
                                 placeholder="example@test.com"
                                 autoFocus
                             />
@@ -123,7 +123,7 @@ export default function SignupPage() {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     {...register('password')}
-                                    className={`w-full px-5 py-3 pr-12 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-emerald-400/50 ${errors.password ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-emerald-400/50 text-white'}`}
+                                    className={`w-full px-5 py-3 pr-12 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-amber-400/50 ${errors.password ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-amber-400/50 text-white'}`}
                                     placeholder="••••••••"
                                     autoFocus
                                 />
@@ -148,7 +148,7 @@ export default function SignupPage() {
                                 <input
                                     type={showPasswordConfirm ? "text" : "password"}
                                     {...register('passwordConfirm')}
-                                    className={`w-full px-5 py-3 pr-12 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-emerald-400/50 ${errors.passwordConfirm ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-emerald-400/50 text-white'}`}
+                                    className={`w-full px-5 py-3 pr-12 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-amber-400/50 ${errors.passwordConfirm ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-amber-400/50 text-white'}`}
                                     placeholder="••••••••"
                                     autoFocus
                                 />
@@ -169,7 +169,7 @@ export default function SignupPage() {
                     {step === 4 && (
                         <div className="flex flex-col relative pb-6 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="flex flex-col items-center mb-6">
-                                <div className="w-24 h-24 rounded-full bg-slate-800 border-2 border-emerald-500/50 flex items-center justify-center text-emerald-400 mb-3 overflow-hidden">
+                                <div className="w-24 h-24 rounded-full bg-slate-800 border-2 border-amber-500/50 flex items-center justify-center text-amber-400 mb-3 overflow-hidden">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
@@ -181,7 +181,7 @@ export default function SignupPage() {
                             <input
                                 type="text"
                                 {...register('nickname')}
-                                className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-emerald-400/50 ${errors.nickname ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-emerald-400/50 text-white'}`}
+                                className={`w-full px-5 py-3 rounded-xl bg-slate-800/50 border outline-none transition-all duration-300 focus:ring-2 focus:ring-amber-400/50 ${errors.nickname ? 'border-red-500/50 focus:border-red-500' : 'border-slate-700/50 focus:border-amber-400/50 text-white'}`}
                                 placeholder="닉네임을 입력해주세요"
                                 autoFocus
                             />
@@ -203,7 +203,7 @@ export default function SignupPage() {
                             className={`mt-4 w-full py-4 px-6 rounded-xl font-bold transition-all duration-300 ${(step === 1 && emailValue && !errors.email) ||
                                 (step === 2 && passwordValue && !errors.password) ||
                                 (step === 3 && passwordConfirmValue && !errors.passwordConfirm)
-                                ? 'text-white bg-emerald-500 hover:bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)] cursor-pointer'
+                                ? 'text-white bg-amber-500 hover:bg-amber-400 shadow-[0_0_15px_rgba(201,162,39,0.4)] cursor-pointer'
                                 : 'text-slate-500 bg-slate-800 border border-slate-700 cursor-not-allowed'
                                 }`}
                         >
@@ -214,7 +214,7 @@ export default function SignupPage() {
                             type="submit"
                             disabled={!nicknameValue || !!errors.nickname}
                             className={`mt-4 w-full py-4 px-6 rounded-xl font-bold transition-all duration-300 ${nicknameValue && !errors.nickname
-                                ? 'text-white bg-emerald-500 hover:bg-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.5)] transform hover:-translate-y-0.5 cursor-pointer'
+                                ? 'text-white bg-amber-500 hover:bg-amber-400 shadow-[0_0_20px_rgba(201,162,39,0.5)] transform hover:-translate-y-0.5 cursor-pointer'
                                 : 'text-slate-500 bg-slate-800 border border-slate-700 cursor-not-allowed'
                                 }`}
                         >

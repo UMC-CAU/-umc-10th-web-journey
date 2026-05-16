@@ -83,7 +83,7 @@ export default function ProfileEditModal({ onClose }: ProfileEditModalProps) {
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-28 h-28 rounded-full bg-slate-700 border-2 border-slate-600 overflow-hidden flex items-center justify-center hover:border-emerald-500/50 transition-colors text-4xl"
+                        className="w-28 h-28 rounded-full bg-slate-700 border-2 border-slate-600 overflow-hidden flex items-center justify-center hover:border-amber-500/50 transition-colors text-4xl"
                     >
                         {preview ? (
                             <img src={preview} alt="프로필 미리보기" className="w-full h-full object-cover" />
@@ -107,7 +107,7 @@ export default function ProfileEditModal({ onClose }: ProfileEditModalProps) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="이름을 입력하세요"
-                    className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl p-3 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 mb-4 transition-all"
+                    className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl p-3 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 mb-4 transition-all"
                 />
 
                 <label className="block text-sm font-semibold text-slate-300 mb-2">
@@ -117,14 +117,14 @@ export default function ProfileEditModal({ onClose }: ProfileEditModalProps) {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="자기소개를 입력하세요 (선택)"
-                    className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl p-3 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 resize-none h-24 mb-6 transition-all"
+                    className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl p-3 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 resize-none h-24 mb-6 transition-all"
                 />
 
                 <button
                     type="button"
                     disabled={!canSubmit}
                     onClick={() => mutation.mutate()}
-                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl transition-colors"
+                    className="w-full py-4 bg-amber-500 hover:bg-amber-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold rounded-xl transition-colors"
                 >
                     {mutation.isPending ? '저장 중...' : '저장'}
                 </button>

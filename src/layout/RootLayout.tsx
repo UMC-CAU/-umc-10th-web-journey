@@ -50,7 +50,7 @@ export default function RootLayout() {
                     {/* Floating Add Button */}
                     <button
                         onClick={handleAddClick}
-                        className="fixed bottom-8 right-8 w-14 h-14 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/30 text-white text-3xl flex items-center justify-center hover:bg-emerald-400 hover:scale-110 transition-all z-40"
+                        className="fixed bottom-8 right-8 w-14 h-14 bg-amber-500 rounded-full shadow-lg shadow-amber-500/30 text-white text-3xl flex items-center justify-center hover:bg-amber-400 hover:scale-110 transition-all z-40"
                     >
                         +
                     </button>

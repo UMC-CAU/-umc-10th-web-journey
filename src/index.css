@@ -1,6 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/* Deep luxury-gold ramp — overrides Tailwind's amber scale so every
+   existing `amber-*` utility renders as rich, deep gold instead of bright amber. */
+@theme {
+  --color-amber-100: #F0DFB0;
+  --color-amber-200: #E3CB85;
+  --color-amber-300: #D4AF37; /* classic metallic gold */
+  --color-amber-400: #C9A227; /* primary deep gold */
+  --color-amber-500: #AE8A1E; /* buttons / fills */
+  --color-amber-600: #8C6D14;
+  --color-amber-700: #6E5410;
+}
+
 body {
   font-family: 'Outfit', sans-serif;
   background-color: #0f172a; /* Tailwind bg-slate-900 */

@@ -37,7 +37,7 @@ export default function MovieDetailPage() {
     );
 
     return (
-        <div className="min-h-screen bg-slate-900 text-slate-50 pb-24 selection:bg-emerald-500/30 selection:text-emerald-200">
+        <div className="min-h-screen bg-slate-900 text-slate-50 pb-24 selection:bg-amber-500/30 selection:text-amber-200">
             {/* Hero Section */}
             <div className="relative w-full min-h-[75vh] md:h-[80vh] flex items-center overflow-hidden">
                 <div
@@ -62,10 +62,10 @@ export default function MovieDetailPage() {
                         <h1 className="text-4xl md:text-5xl lg:text-5xl font-extrabold mb-3 tracking-tight text-white drop-shadow-lg">
                             {movie.title}
                         </h1>
-                        {movie.tagline && <p className="text-emerald-400 text-lg md:text-xl font-medium italic mb-6">"{movie.tagline}"</p>}
+                        {movie.tagline && <p className="text-amber-400 text-lg md:text-xl font-medium italic mb-6">"{movie.tagline}"</p>}
                         
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-8 text-sm md:text-base font-medium">
-                            <span className="flex items-center gap-1.5 bg-slate-800/80 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-700/50 text-emerald-400">
+                            <span className="flex items-center gap-1.5 bg-slate-800/80 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-700/50 text-amber-400">
                                 ⭐️ {(movie.vote_average || 0).toFixed(1)}
                             </span>
                             <span className="bg-slate-800/80 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-700/50 text-slate-300">
@@ -78,7 +78,7 @@ export default function MovieDetailPage() {
 
                         <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-8">
                             {movie.genres.map((g) => (
-                                <span key={g.id} className="bg-emerald-500/10 text-emerald-300 px-4 py-1.5 rounded-full text-sm font-semibold border border-emerald-500/20 backdrop-blur shadow-inner">
+                                <span key={g.id} className="bg-amber-500/10 text-amber-300 px-4 py-1.5 rounded-full text-sm font-semibold border border-amber-500/20 backdrop-blur shadow-inner">
                                     {g.name}
                                 </span>
                             ))}
@@ -97,13 +97,13 @@ export default function MovieDetailPage() {
             {/* Cast Section */}
             <div className="max-w-7xl mx-auto px-6 md:px-12 mt-12 md:mt-24">
                 <div className="flex items-center gap-3 mb-10">
-                    <div className="w-2 h-8 bg-emerald-500 rounded-full" />
+                    <div className="w-2 h-8 bg-amber-500 rounded-full" />
                     <h2 className="text-3xl font-extrabold text-white tracking-tight">주요 출연진</h2>
                 </div>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 gap-y-10">
                     {credits.cast.slice(0, 12).map((actor) => (
-                        <div key={actor.id} className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
+                        <div key={actor.id} className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-2xl overflow-hidden hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300">
                             <div className="aspect-[2/3] overflow-hidden bg-slate-800 relative">
                                 <img
                                     src={actor.profile_path ? `https://image.tmdb.org/t/p/w300${actor.profile_path}` : 'https://via.placeholder.com/300x450?text=No+Image'}
@@ -115,7 +115,7 @@ export default function MovieDetailPage() {
                             </div>
                             <div className="p-4 flex-grow flex flex-col justify-center text-center">
                                 <h3 className="font-bold text-sm md:text-base text-slate-100 mb-1 line-clamp-1">{actor.name}</h3>
-                                <p className="text-emerald-400/80 text-xs md:text-sm font-medium line-clamp-1">{actor.character}</p>
+                                <p className="text-amber-400/80 text-xs md:text-sm font-medium line-clamp-1">{actor.character}</p>
                             </div>
                         </div>
                     ))}
