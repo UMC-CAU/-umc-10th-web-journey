@@ -87,6 +87,7 @@ export default function SignupPage() {
                 <button
                     type="button"
                     onClick={handlePrevStep}
+                    aria-label="이전 단계로"
                     className="absolute top-8 left-8 text-slate-300 hover:text-white transition-colors"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -130,6 +131,7 @@ export default function SignupPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 focus:outline-none"
                                 >
                                     <EyeIcon show={showPassword} />
@@ -155,6 +157,7 @@ export default function SignupPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                                    aria-label={showPasswordConfirm ? '비밀번호 숨기기' : '비밀번호 표시'}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 focus:outline-none"
                                 >
                                     <EyeIcon show={showPasswordConfirm} />

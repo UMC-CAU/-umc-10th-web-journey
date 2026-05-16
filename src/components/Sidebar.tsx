@@ -86,17 +86,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         </p>
                         <div className="flex gap-3">
                             <button
-                                onClick={() => setShowConfirm(false)}
-                                className="flex-1 py-3 rounded-xl bg-zinc-800 text-zinc-300 font-semibold hover:bg-zinc-700 transition-colors"
-                            >
-                                아니오
-                            </button>
-                            <button
                                 disabled={withdrawMutation.isPending}
                                 onClick={() => withdrawMutation.mutate()}
                                 className="flex-1 py-3 rounded-xl bg-rose-500 hover:bg-rose-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold transition-colors"
                             >
                                 {withdrawMutation.isPending ? '처리 중...' : '예'}
+                            </button>
+                            <button
+                                onClick={() => setShowConfirm(false)}
+                                className="flex-1 py-3 rounded-xl bg-zinc-800 text-zinc-300 font-semibold hover:bg-zinc-700 transition-colors"
+                            >
+                                아니오
                             </button>
                         </div>
                     </div>
