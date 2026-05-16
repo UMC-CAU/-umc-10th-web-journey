@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
@@ -54,29 +54,48 @@ export default function LpDetailPage() {
         fetchNextPage: fetchNextComments,
     } = useInfiniteQuery({
         queryKey: commentsKey,
-        queryFn: async ({ pageParam = 1 }) => {
+        queryFn: async ({ pageParam }) => {
             const order = commentOrder === 'latest' ? 'desc' : 'asc';
-            const response = await apiClient.get(`/lps/${lpid}/comments`, { params: { order, page: pageParam, limit: 10 } });
-            const resultData = response.data?.data;
-            const commentsArray = resultData?.data || resultData || [];
+            // Cursor-based pagination: only send `cursor` from the 2nd page on.
+            const response = await apiClient.get(`/lps/${lpid}/comments`, {
+                params: {
+                    order,
+                    limit: 10,
+                    ...(pageParam ? { cursor: pageParam } : {}),
+                },
+            });
+            const result = response.data?.data ?? {};
+            const items = (result.data ?? result ?? []) as Comment[];
             return {
-                items: commentsArray as Comment[],
-                nextPage: commentsArray.length > 0 ? pageParam + 1 : undefined,
-                isLast: commentsArray.length === 0 || commentsArray.length < 10,
+                items,
+                nextCursor: result.nextCursor as number | undefined,
+                hasNext:
+                    typeof result.hasNext === 'boolean'
+                        ? result.hasNext
+                        : items.length === 10,
             };
         },
-        initialPageParam: 1,
-        getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.nextPage),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) =>
+            lastPage.hasNext ? lastPage.nextCursor : undefined,
         enabled: !!lpid,
     });
 
     useEffect(() => {
-        if (commentInView && hasNextComments) {
+        if (commentInView && hasNextComments && !isFetchingNextComments) {
             fetchNextComments();
         }
-    }, [commentInView, hasNextComments, fetchNextComments]);
+    }, [commentInView, hasNextComments, isFetchingNextComments, fetchNextComments]);
 
-    const allComments = commentsData?.pages.flatMap((page) => page.items) || [];
+    // Defensive de-dupe by id so a cursor-boundary overlap can never repeat a comment.
+    const allComments = useMemo(() => {
+        const seen = new Set<number>();
+        return (commentsData?.pages.flatMap((page) => page.items) ?? []).filter((c) => {
+            if (seen.has(c.id)) return false;
+            seen.add(c.id);
+            return true;
+        });
+    }, [commentsData]);
 
     // ---- Comment mutations ----
     const createCommentMutation = useMutation({

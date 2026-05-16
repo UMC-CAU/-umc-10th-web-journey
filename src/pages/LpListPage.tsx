@@ -1,9 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
 import apiClient from '../api/axios';
 import type { LpItem } from '../types/lp';
+
+const PAGE_SIZE = 10;
+
+const LpCardSkeleton = () => (
+    <div className="aspect-[2/3] bg-slate-800 animate-pulse rounded-xl" />
+);
 
 export default function LpListPage() {
     const [sort, setSort] = useState<'latest' | 'oldest'>('latest');
@@ -17,37 +23,52 @@ export default function LpListPage() {
         refetch,
         fetchNextPage,
         hasNextPage,
-        isFetchingNextPage
+        isFetchingNextPage,
     } = useInfiniteQuery({
         queryKey: ['lps', sort],
-        queryFn: async ({ pageParam = 1 }) => {
+        queryFn: async ({ pageParam }) => {
             const order = sort === 'latest' ? 'desc' : 'asc';
-            const response = await apiClient.get('/lps', { params: { order, page: pageParam, limit: 10 } });
-            const resultData = response.data?.data;
-            const lpArray = resultData?.data || resultData || [];
-
+            // The LP API is cursor-based: only send `cursor` from the 2nd page on.
+            const response = await apiClient.get('/lps', {
+                params: {
+                    order,
+                    limit: PAGE_SIZE,
+                    ...(pageParam ? { cursor: pageParam } : {}),
+                },
+            });
+            const result = response.data?.data ?? {};
+            const items = (result.data ?? result ?? []) as LpItem[];
             return {
-                items: lpArray as LpItem[],
-                nextPage: lpArray.length > 0 ? pageParam + 1 : undefined,
-                isLast: lpArray.length === 0 || lpArray.length < 10
+                items,
+                nextCursor: result.nextCursor as number | undefined,
+                hasNext:
+                    typeof result.hasNext === 'boolean'
+                        ? result.hasNext
+                        : items.length === PAGE_SIZE,
             };
         },
-        initialPageParam: 1,
-        getNextPageParam: (lastPage) => {
-            if (lastPage.isLast) return undefined;
-            return lastPage.nextPage;
-        },
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) =>
+            lastPage.hasNext ? lastPage.nextCursor : undefined,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10,
     });
 
     useEffect(() => {
-        if (inView && hasNextPage) {
+        if (inView && hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
         }
-    }, [inView, hasNextPage, fetchNextPage]);
+    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    const allLps = data?.pages.flatMap(page => page.items) || [];
+    // Defensive de-dupe by id so a cursor-boundary overlap can never repeat a card.
+    const allLps = useMemo(() => {
+        const seen = new Set<number>();
+        return (data?.pages.flatMap((page) => page.items) ?? []).filter((lp) => {
+            if (seen.has(lp.id)) return false;
+            seen.add(lp.id);
+            return true;
+        });
+    }, [data]);
 
     return (
         <div className="min-h-screen bg-slate-900 px-6 py-12 md:px-12 lg:px-20">
@@ -92,8 +113,8 @@ export default function LpListPage() {
                     </div>
                 ) : isPending ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                        {Array.from({ length: 10 }).map((_, i) => (
-                            <div key={i} className="aspect-[2/3] bg-slate-800 animate-pulse rounded-xl" />
+                        {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                            <LpCardSkeleton key={`init-skel-${i}`} />
                         ))}
                     </div>
                 ) : allLps.length > 0 ? (
@@ -106,10 +127,10 @@ export default function LpListPage() {
                                     className="group relative aspect-[2/3] bg-slate-800 rounded-xl overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-10 hover:shadow-2xl hover:shadow-emerald-500/20"
                                 >
                                     {lp.thumbnail ? (
-                                        <img 
-                                            src={lp.thumbnail} 
-                                            alt={lp.title} 
-                                            className="w-full h-full object-cover" 
+                                        <img
+                                            src={lp.thumbnail}
+                                            alt={lp.title}
+                                            className="w-full h-full object-cover"
                                             onError={(e) => {
                                                 const target = e.target as HTMLImageElement;
                                                 if (!target.src.includes('picsum.photos')) {
@@ -134,14 +155,16 @@ export default function LpListPage() {
                                     </div>
                                 </div>
                             ))}
+
+                            {/* Skeleton placeholders shown while the next page loads */}
+                            {isFetchingNextPage &&
+                                Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                                    <LpCardSkeleton key={`next-skel-${i}`} />
+                                ))}
                         </div>
 
-                        {/* Trigger Element for Infinite Scroll */}
-                        <div ref={ref} className="h-20 flex items-center justify-center mt-10">
-                            {isFetchingNextPage && (
-                                <div className="w-8 h-8 border-4 border-slate-600 border-t-emerald-500 rounded-full animate-spin"></div>
-                            )}
-                        </div>
+                        {/* Trigger element for infinite scroll */}
+                        <div ref={ref} className="h-10 w-full mt-10" />
                     </>
                 ) : (
                     <div className="text-center py-20 text-slate-400">
