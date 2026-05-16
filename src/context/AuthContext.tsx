@@ -14,13 +14,14 @@ interface AuthContextType {
     isLoading: boolean;
     login: (token: string, refreshToken: string, userData?: User) => void;
     logout: () => void;
+    updateUser: (userData: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken, removeToken] = useLocalStorage<string | null>('accessToken', null);
-    const [refreshToken, setRefreshToken, removeRefreshToken] = useLocalStorage<string | null>('refreshToken', null);
+    const [, setRefreshToken, removeRefreshToken] = useLocalStorage<string | null>('refreshToken', null);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -62,12 +63,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
     }, [removeToken, removeRefreshToken]);
 
+    const updateUser = useCallback((userData: User) => {
+        setUser((prev) => ({ ...prev, ...userData }));
+    }, []);
+
     const value = {
         user,
         isAuthenticated: !!token,
         isLoading,
         login,
-        logout
+        logout,
+        updateUser
     };
 
     return (

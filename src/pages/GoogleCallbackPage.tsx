@@ -20,7 +20,7 @@ const GoogleCallbackPage = () => {
         const name = queryParams.get('name');
 
         if (accessToken && refreshToken) {
-            login(accessToken, refreshToken, { id: userId, nickname: name });
+            login(accessToken, refreshToken, { id: userId ?? undefined, nickname: name ?? undefined });
             navigate('/', { replace: true });
         } else {
             // Handle error case, perhaps redirect to login with an error message

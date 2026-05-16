@@ -1,10 +1,7 @@
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import apiClient from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-
-const LINKS = [
-    { to: '/', label: '홈' },
-    { to: '/v1/lps', label: 'LP 목록' },
-];
 
 interface NavbarProps {
     onMenuClick?: () => void;
@@ -14,10 +11,24 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
     const { isAuthenticated, logout, user } = useAuth();
     const navigate = useNavigate();
 
+    const logoutMutation = useMutation({
+        mutationFn: async () => {
+            // Best-effort server signout; the client session is cleared regardless.
+            try {
+                await apiClient.post('/auth/signout');
+            } catch {
+                /* ignore — proceed with local logout */
+            }
+        },
+        onSuccess: () => {
+            logout();
+            alert('로그아웃 되었습니다.');
+            navigate('/');
+        },
+    });
+
     const handleLogout = () => {
-        logout();
-        alert('로그아웃 되었습니다.');
-        navigate('/');
+        logoutMutation.mutate();
     };
 
     return (
@@ -57,9 +68,10 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
                                 </span>
                                 <button
                                     onClick={handleLogout}
-                                    className="px-4 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-sm transition-all duration-300 hover:bg-zinc-700 hover:text-white"
+                                    disabled={logoutMutation.isPending}
+                                    className="px-4 py-2 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-sm transition-all duration-300 hover:bg-zinc-700 hover:text-white disabled:opacity-50"
                                 >
-                                    로그아웃
+                                    {logoutMutation.isPending ? '로그아웃 중...' : '로그아웃'}
                                 </button>
                             </>
                         ) : (

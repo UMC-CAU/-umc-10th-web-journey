@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,25 +28,33 @@ const LoginPage = () => {
         defaultValues: { email: '', password: '' }
     });
 
-    const onSubmit = async (formValues: LoginFormValues) => {
-        try {
-            setApiError(null);
+    const loginMutation = useMutation({
+        mutationFn: async (formValues: LoginFormValues) => {
             const response = await axios.post('http://localhost:8000/v1/auth/signin', {
                 email: formValues.email,
                 password: formValues.password,
             });
-            console.log('Login successful:', response.data);
-            const accessToken = response.data?.data?.accessToken || response.data?.accessToken;
-            const refreshToken = response.data?.data?.refreshToken || response.data?.refreshToken;
+            return response.data;
+        },
+        onSuccess: (data) => {
+            const accessToken = data?.data?.accessToken || data?.accessToken;
+            const refreshToken = data?.data?.refreshToken || data?.refreshToken;
 
             login(accessToken || 'dummy_login_token', refreshToken || 'dummy_refresh_token');
 
+            // Auth token changed — redirect to the home (or originally requested) page.
             const from = location.state?.from?.pathname || '/';
             navigate(from, { replace: true });
-        } catch (error: any) {
+        },
+        onError: (error: any) => {
             console.error('Login failed:', error);
             setApiError(error.response?.data?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
-        }
+        },
+    });
+
+    const onSubmit = (formValues: LoginFormValues) => {
+        setApiError(null);
+        loginMutation.mutate(formValues);
     };
 
     return (
@@ -95,13 +104,13 @@ const LoginPage = () => {
 
                     <button
                         type="submit"
-                        disabled={!isValid}
-                        className={`mt-4 w-full py-4 px-6 rounded-xl font-bold transition-all duration-300 ${isValid
+                        disabled={!isValid || loginMutation.isPending}
+                        className={`mt-4 w-full py-4 px-6 rounded-xl font-bold transition-all duration-300 ${isValid && !loginMutation.isPending
                             ? 'text-white bg-emerald-500 hover:bg-emerald-400 transform hover:-translate-y-0.5 active:translate-y-0 shadow-[0_0_15px_rgba(52,211,153,0.4)] hover:shadow-[0_0_25px_rgba(52,211,153,0.6)] cursor-pointer'
                             : 'text-slate-500 bg-slate-800 border border-slate-700 cursor-not-allowed'
                             }`}
                     >
-                        로그인
+                        {loginMutation.isPending ? '로그인 중...' : '로그인'}
                     </button>
 
                     <div className="relative flex items-center justify-center w-full mt-2">
