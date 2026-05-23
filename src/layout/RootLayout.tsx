@@ -1,34 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import LpFormModal from '../components/LpFormModal';
 import { useAuth } from '../context/AuthContext';
+import useSidebar from '../hooks/useSidebar';
 
 export default function RootLayout() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+    const { isOpen: isSidebarOpen, toggle: toggleSidebar, close: closeSidebar } = useSidebar();
     const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 1024) {
-                setIsSidebarOpen(false);
-            } else {
-                setIsSidebarOpen(true);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-    const closeSidebar = () => {
-        if (window.innerWidth < 1024) {
-            setIsSidebarOpen(false);
-        }
-    };
 
     const handleAddClick = () => {
         if (!isAuthenticated) {
