@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
 import apiClient from '../api/axios';
+import useThrottle from '../hooks/useThrottle';
 import type { LpItem } from '../types/lp';
 
 const PAGE_SIZE = 10;
@@ -50,6 +51,7 @@ export default function LpListPage() {
     const [sort, setSort] = useState<'latest' | 'oldest'>('latest');
     const navigate = useNavigate();
     const { ref, inView } = useInView();
+    const throttledInView = useThrottle(inView, 1000);
 
     // Navbar에서 URL에 기록한 검색어를 읽어옴 (이미 300ms 디바운스 적용된 값)
     const [searchParams] = useSearchParams();
@@ -101,10 +103,14 @@ export default function LpListPage() {
     const isLoading = isPending && isFetching;
 
     useEffect(() => {
-        if (inView && hasNextPage && !isFetchingNextPage) {
+        if (throttledInView && hasNextPage) {
+            console.log('[useThrottle] fetchNextPage →', new Date().toLocaleTimeString());
             fetchNextPage();
         }
-    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+    // isFetchingNextPage를 deps에서 제외: fetch 완료 시 effect 재실행을 막아 throttle이 실제로 동작하게 함
+    // React Query의 fetchNextPage는 fetch 중 중복 호출을 내부에서 무시하므로 안전
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [throttledInView, hasNextPage, fetchNextPage]);
 
     const allLps = useMemo(() => {
         const seen = new Set<number>();
