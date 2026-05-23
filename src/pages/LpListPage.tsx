@@ -4,8 +4,44 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
 import apiClient from '../api/axios';
 import type { LpItem } from '../types/lp';
+import useDebounce from '../hooks/useDebounce';
 
 const PAGE_SIZE = 10;
+
+type PageData = {
+    items: LpItem[];
+    nextCursor: number | undefined;
+    hasNext: boolean;
+};
+
+async function fetchLps({
+    pageParam,
+    order,
+    search,
+}: {
+    pageParam: number;
+    order: string;
+    search?: string;
+}): Promise<PageData> {
+    const response = await apiClient.get('/lps', {
+        params: {
+            order,
+            limit: PAGE_SIZE,
+            ...(pageParam ? { cursor: pageParam } : {}),
+            ...(search ? { search } : {}),
+        },
+    });
+    const result = response.data?.data ?? {};
+    const items = (result.data ?? result ?? []) as LpItem[];
+    return {
+        items,
+        nextCursor: result.nextCursor as number | undefined,
+        hasNext:
+            typeof result.hasNext === 'boolean'
+                ? result.hasNext
+                : items.length === PAGE_SIZE,
+    };
+}
 
 const LpCardSkeleton = () => (
     <div className="aspect-[2/3] bg-slate-800 animate-pulse rounded-xl" />
@@ -13,46 +49,60 @@ const LpCardSkeleton = () => (
 
 export default function LpListPage() {
     const [sort, setSort] = useState<'latest' | 'oldest'>('latest');
+    const [searchInput, setSearchInput] = useState('');
     const navigate = useNavigate();
     const { ref, inView } = useInView();
+
+    // 300ms 디바운스 적용
+    const debouncedQuery = useDebounce(searchInput, 300);
+    const isSearchMode = debouncedQuery.trim().length > 0;
+
+    // 전체 LP 목록 쿼리 (검색 없을 때)
+    const allLpsQuery = useInfiniteQuery({
+        queryKey: ['lps', sort] as const,
+        queryFn: ({ pageParam }) =>
+            fetchLps({
+                pageParam: pageParam as number,
+                order: sort === 'latest' ? 'desc' : 'asc',
+            }),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) =>
+            lastPage.hasNext ? lastPage.nextCursor : undefined,
+        enabled: !isSearchMode,
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10,
+    });
+
+    // 검색 쿼리 — 빈 문자열/공백이면 enabled: false로 요청 차단
+    const searchQueryResult = useInfiniteQuery({
+        queryKey: ['search', debouncedQuery] as const,
+        queryFn: ({ pageParam }) =>
+            fetchLps({
+                pageParam: pageParam as number,
+                order: 'desc',
+                search: debouncedQuery.trim(),
+            }),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) =>
+            lastPage.hasNext ? lastPage.nextCursor : undefined,
+        enabled: isSearchMode,
+        staleTime: 1000 * 60 * 3,
+        gcTime: 1000 * 60 * 5,
+    });
 
     const {
         data,
         isPending,
+        isFetching,
         isError,
         refetch,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
-    } = useInfiniteQuery({
-        queryKey: ['lps', sort],
-        queryFn: async ({ pageParam }) => {
-            const order = sort === 'latest' ? 'desc' : 'asc';
-            // The LP API is cursor-based: only send `cursor` from the 2nd page on.
-            const response = await apiClient.get('/lps', {
-                params: {
-                    order,
-                    limit: PAGE_SIZE,
-                    ...(pageParam ? { cursor: pageParam } : {}),
-                },
-            });
-            const result = response.data?.data ?? {};
-            const items = (result.data ?? result ?? []) as LpItem[];
-            return {
-                items,
-                nextCursor: result.nextCursor as number | undefined,
-                hasNext:
-                    typeof result.hasNext === 'boolean'
-                        ? result.hasNext
-                        : items.length === PAGE_SIZE,
-            };
-        },
-        initialPageParam: 0,
-        getNextPageParam: (lastPage) =>
-            lastPage.hasNext ? lastPage.nextCursor : undefined,
-        staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 10,
-    });
+    } = isSearchMode ? searchQueryResult : allLpsQuery;
+
+    // isPending alone is true even when enabled:false — use isFetching to distinguish
+    const isLoading = isPending && isFetching;
 
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
@@ -60,7 +110,6 @@ export default function LpListPage() {
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    // Defensive de-dupe by id so a cursor-boundary overlap can never repeat a card.
     const allLps = useMemo(() => {
         const seen = new Set<number>();
         return (data?.pages.flatMap((page) => page.items) ?? []).filter((lp) => {
@@ -73,29 +122,52 @@ export default function LpListPage() {
     return (
         <div className="min-h-screen bg-slate-900 px-6 py-12 md:px-12 lg:px-20">
             <div className="max-w-7xl mx-auto">
-                <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <h1 className="text-4xl font-extrabold text-white tracking-tight drop-shadow-md">
-                        LP 목록
-                    </h1>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setSort('latest')}
-                            className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${sort === 'latest'
-                                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
-                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                                }`}
-                        >
-                            최신순
-                        </button>
-                        <button
-                            onClick={() => setSort('oldest')}
-                            className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${sort === 'oldest'
-                                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
-                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                                }`}
-                        >
-                            오래된순
-                        </button>
+                <header className="mb-10 flex flex-col gap-4">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <h1 className="text-4xl font-extrabold text-white tracking-tight drop-shadow-md">
+                            LP 목록
+                        </h1>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setSort('latest')}
+                                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${sort === 'latest'
+                                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
+                                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                                    }`}
+                            >
+                                최신순
+                            </button>
+                            <button
+                                onClick={() => setSort('oldest')}
+                                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${sort === 'oldest'
+                                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
+                                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                                    }`}
+                            >
+                                오래된순
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">
+                            🔍
+                        </span>
+                        <input
+                            type="text"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            placeholder="LP 제목으로 검색..."
+                            className="w-full px-4 py-3 pl-10 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 transition-colors"
+                        />
+                        {searchInput && (
+                            <button
+                                onClick={() => setSearchInput('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                            >
+                                ✕
+                            </button>
+                        )}
                     </div>
                 </header>
 
@@ -111,7 +183,7 @@ export default function LpListPage() {
                             다시 시도
                         </button>
                     </div>
-                ) : isPending ? (
+                ) : isLoading ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                         {Array.from({ length: PAGE_SIZE }).map((_, i) => (
                             <LpCardSkeleton key={`init-skel-${i}`} />
@@ -119,6 +191,11 @@ export default function LpListPage() {
                     </div>
                 ) : allLps.length > 0 ? (
                     <>
+                        {isSearchMode && (
+                            <p className="text-slate-400 text-sm mb-4">
+                                "{debouncedQuery}" 검색 결과 {allLps.length}개
+                            </p>
+                        )}
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 gap-y-10">
                             {allLps.map((lp) => (
                                 <div
@@ -156,16 +233,18 @@ export default function LpListPage() {
                                 </div>
                             ))}
 
-                            {/* Skeleton placeholders shown while the next page loads */}
                             {isFetchingNextPage &&
                                 Array.from({ length: PAGE_SIZE }).map((_, i) => (
                                     <LpCardSkeleton key={`next-skel-${i}`} />
                                 ))}
                         </div>
 
-                        {/* Trigger element for infinite scroll */}
                         <div ref={ref} className="h-10 w-full mt-10" />
                     </>
+                ) : isSearchMode ? (
+                    <div className="text-center py-20 text-slate-400">
+                        "{debouncedQuery}"에 대한 검색 결과가 없습니다.
+                    </div>
                 ) : (
                     <div className="text-center py-20 text-slate-400">
                         등록된 LP가 없습니다.
