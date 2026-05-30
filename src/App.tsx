@@ -1,46 +1,29 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import RootLayout from './layout/RootLayout';
-import HomePage from './pages/HomePage';
-import NotFoundPage from './pages/NotFoundPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import MyPage from './pages/MyPage';
-import GoogleCallbackPage from './pages/GoogleCallbackPage';
-import LpListPage from './pages/LpListPage';
-import LpDetailPage from './pages/LpDetailPage';
+import { useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from './app/hooks';
+import { calculateTotals } from './features/cart/cartSlice';
+import Navbar from './components/Navbar';
+import CartContainer from './components/CartContainer';
+import Modal from './components/Modal';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <RootLayout />,
-    errorElement: <NotFoundPage />,
-    children: [
-      // Public Route
-      { index: true, element: <HomePage /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'signup', element: <SignupPage /> },
-      { path: 'v1/auth/google/callback', element: <GoogleCallbackPage /> },
-      { path: 'v1/lps', element: <LpListPage /> },
+function App() {
+  const cartItems = useAppSelector((state) => state.cart.cartItems);
+  const isOpen = useAppSelector((state) => state.modal.isOpen);
+  const dispatch = useAppDispatch();
 
-      // Protected Route
-      {
-        element: <ProtectedRoute />,
-        children: [
-          { path: 'mypage', element: <MyPage /> },
-          { path: 'lp/:lpid', element: <LpDetailPage /> },
-        ],
-      },
-    ],
-  },
-]);
+  // cartItems가 바뀔 때마다 amount/total 재계산 (수량 증가/감소/삭제 시 자동 반영)
+  useEffect(() => {
+    dispatch(calculateTotals());
+  }, [cartItems, dispatch]);
 
-import { AuthProvider } from './context/AuthContext';
-
-export default function App() {
   return (
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <div className="min-h-screen bg-[#0b0d12] text-[#eef1f7] bg-[radial-gradient(1200px_600px_at_80%_-10%,rgba(124,92,255,0.18),transparent_60%),radial-gradient(900px_500px_at_0%_0%,rgba(80,200,255,0.10),transparent_55%)]">
+      {isOpen && <Modal />}
+      <Navbar />
+      <main className="mx-auto w-full max-w-3xl px-5 pb-24 pt-10">
+        <CartContainer />
+      </main>
+    </div>
   );
 }
+
+export default App;
