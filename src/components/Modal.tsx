@@ -31,7 +31,7 @@ const Modal = () => {
             onClick={() => dispatch(closeModal())}
             className="flex-1 rounded-xl border border-[#2c3344] bg-[#222837] py-3 text-sm font-bold text-[#eef1f7] transition hover:bg-[#2c3344]"
           >
-            아니오
+            아니요
           </button>
         </div>
       </div>
