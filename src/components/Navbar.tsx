@@ -1,9 +1,9 @@
 import { ShoppingCart, Disc3 } from 'lucide-react';
-import { useAppSelector } from '../app/hooks';
+import { useCartStore } from '../stores/cartStore';
 
 const Navbar = () => {
-  // 전체 수량(amount)을 store에서 구독해 뱃지로 표시
-  const amount = useAppSelector((state) => state.cart.amount);
+  // Zustand 스토어에서 전체 수량(amount) 구독
+  const amount = useCartStore((state) => state.amount);
 
   return (
     <nav className="sticky top-0 z-10 h-[72px] border-b border-[#2c3344] bg-[#0d1017]/70 backdrop-blur-md">

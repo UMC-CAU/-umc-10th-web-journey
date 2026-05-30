@@ -1,10 +1,11 @@
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { openModal } from '../features/modal/modalSlice';
+import { useCartStore } from '../stores/cartStore';
+import { useModalStore } from '../stores/modalStore';
 import CartItem from './CartItem';
 
 const CartContainer = () => {
-  const { cartItems, total, amount } = useAppSelector((state) => state.cart);
-  const dispatch = useAppDispatch();
+  // 상태와 액션을 구조 분해 할당으로 가져오기
+  const { cartItems, total, amount } = useCartStore();
+  const { openModal } = useModalStore();
 
   // 장바구니가 비어 있을 때
   if (amount < 1) {
@@ -35,7 +36,7 @@ const CartContainer = () => {
           <span className="text-2xl font-extrabold">₩{total.toLocaleString()}</span>
         </div>
         <button
-          onClick={() => dispatch(openModal())}
+          onClick={() => openModal()}
           className="mt-5 w-full rounded-2xl border border-[#ff5c7a]/40 bg-[#ff5c7a]/10 py-3.5 text-sm font-bold text-[#ff5c7a] transition hover:bg-[#ff5c7a]/20"
         >
           장바구니 비우기
