@@ -15,6 +15,7 @@ export interface MovieListResult {
 
 const TMDB_SEARCH_URL = 'https://api.themoviedb.org/3/search/movie';
 const TMDB_POPULAR_URL = 'https://api.themoviedb.org/3/movie/popular';
+const TMDB_MOVIE_URL = 'https://api.themoviedb.org/3/movie';
 const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p';
 
 // .env.example 의 예시 값이 그대로 남아 있으면 미설정으로 간주한다.
@@ -98,4 +99,21 @@ export const getPopularMovies = async (
   });
 
   return fetchMovieList(TMDB_POPULAR_URL, params, 'TMDB 인기 영화 요청');
+};
+
+// 단일 영화 상세 조회 (/movies/:movieId 라우트에서 새로고침/딥링크로도 동작하도록 id 기준 조회)
+export const getMovieDetails = async (
+  movieId: string | number,
+  language: LanguageCode = 'ko-KR',
+): Promise<Movie> => {
+  const params = new URLSearchParams({ language });
+  const headers = applyAuth(params);
+
+  const response = await fetch(`${TMDB_MOVIE_URL}/${movieId}?${params.toString()}`, { headers });
+
+  if (!response.ok) {
+    throw new Error(`TMDB 영화 상세 요청 실패: ${response.status}`);
+  }
+
+  return (await response.json()) as Movie;
 };

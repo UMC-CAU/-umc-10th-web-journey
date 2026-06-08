@@ -1,5 +1,6 @@
-import { CalendarDays, ExternalLink, Star, X } from 'lucide-react';
+import { CalendarDays, ExternalLink, Film, Star, X } from 'lucide-react';
 import { memo, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { getTmdbImageUrl } from '../api/tmdb';
 import type { Movie } from '../types/movie';
 
@@ -112,6 +113,13 @@ const MovieModal = memo(({ movie, onClose }: MovieModalProps) => {
                 IMDb에서 검색하기
                 <ExternalLink size={17} />
               </a>
+              <Link
+                to={`/movies/${movie.id}`}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#4a433b] bg-[#11100f] px-4 text-sm font-bold text-[#f8f4ee] transition hover:border-[#43b7a7]"
+              >
+                상세 페이지
+                <Film size={17} />
+              </Link>
               <button
                 className="inline-flex h-11 items-center justify-center rounded-md border border-[#4a433b] bg-[#11100f] px-4 text-sm font-bold text-[#f8f4ee] transition hover:border-[#43b7a7]"
                 onClick={onClose}
